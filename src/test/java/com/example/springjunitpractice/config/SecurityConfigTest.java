@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK) // Mockito(가짜) 환경에서 테스트
 public class SecurityConfigTest {
 
-    // MockMvc 빈 DI
+    // MockMvc 주입(DI)
     @Autowired
     private MockMvc mvc;
     
