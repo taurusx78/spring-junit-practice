@@ -11,6 +11,9 @@ import com.example.springjunitpractice.dto.ResponseDto;
 import com.example.springjunitpractice.handler.exception.CustomApiException;
 import com.example.springjunitpractice.handler.exception.CustomValidationException;
 
+// 시큐리티 필터에서 발생한 Exception은 AuthenticationEntryPoint 클래스가 처리하고,
+// 필터 통과 후 컨트롤러에서 발생한 Exception은 CustomExceptionHandler 클래스가 처리함
+
 @RestControllerAdvice // RestController에서 발생한 모든 Exception을 낚아채서 처리함
 public class CustomExceptionHandler {
 

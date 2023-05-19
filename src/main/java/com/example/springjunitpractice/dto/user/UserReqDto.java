@@ -13,6 +13,14 @@ import lombok.Data;
 public class UserReqDto {
 
     @Data
+    public static class LoginReqDto {
+        // UserController 실행 전 JwtAuthenticationFilter에서 사용되는 DTO 객체이기 때문에
+        // AOP를 통한 유효성 검사 불가함
+        private String username;
+        private String password;
+    }
+
+    @Data
     public static class JoinReqDto {
 
         // 영문, 숫자 4~16자
