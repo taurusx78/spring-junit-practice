@@ -3,6 +3,8 @@ package com.example.springjunitpractice.web;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.example.springjunitpractice.domain.user.UserRepository;
 import com.example.springjunitpractice.dto.user.UserReqDto.JoinReqDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Transactional // 하나의 테스트가 완료되면 데이터를 Rollback 함
 @AutoConfigureMockMvc // Mockito 환경에 MockMvc 빈 등록
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK) // Mockito(가짜) 환경에서 테스트
 public class UserControllerTest extends DummyObject {
