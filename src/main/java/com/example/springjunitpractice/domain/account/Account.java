@@ -16,6 +16,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.example.springjunitpractice.domain.user.User;
+import com.example.springjunitpractice.handler.exception.CustomApiException;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class Account {
     private Long id;
 
     @Column(unique = true, nullable = false, length = 60)
-    private int number; // 계좌번호
+    private Long number; // 계좌번호
 
     @Column(nullable = false, length = 4)
     private int password; // 계좌 비밀번호
@@ -53,7 +54,7 @@ public class Account {
     private LocalDateTime updated;
 
     @Builder
-    public Account(Long id, int number, int password, Long balance, User user, LocalDateTime created,
+    public Account(Long id, Long number, int password, Long balance, User user, LocalDateTime created,
             LocalDateTime updated) {
         this.id = id;
         this.number = number;
@@ -62,5 +63,13 @@ public class Account {
         this.user = user;
         this.created = created;
         this.updated = updated;
+    }
+
+    public void checkOwner(Long userId) {
+        // User 엔티티가 LAZY 로딩이어도 Account 테이블에서 user_id는 조회할 수 있기 때문에,
+        // user.getId()를 호출해도 User 엔티티의 로딩이 일어나진 않음
+        if (user.getId() != userId) {
+            throw new CustomApiException("계좌의 소유자가 아닙니다.");
+        }
     }
 }

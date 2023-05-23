@@ -14,7 +14,7 @@ public class AccountRespDto {
     @Getter
     public static class AccountSaveRespDto {
         private Long id;
-        private int number;
+        private Long number;
         private Long balance;
 
         public AccountSaveRespDto(Account account) {
@@ -38,7 +38,7 @@ public class AccountRespDto {
         @Getter
         public class AccountDto {
             private Long id;
-            private int number;
+            private Long number;
             private Long balance;
 
             public AccountDto(Account account) {

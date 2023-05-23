@@ -38,7 +38,7 @@ public class DummyObject {
     }
 
     // 저장용
-    protected Account newAccount(int number, User user) {
+    protected Account newAccount(Long number, User user) {
         return Account.builder()
                 .number(number)
                 .password(1234)
@@ -48,7 +48,7 @@ public class DummyObject {
     }
 
     // 조회용
-    protected Account newMockAccount(Long id, int number, Long balance, User user) {
+    protected Account newMockAccount(Long id, Long number, Long balance, User user) {
         return Account.builder()
                 .id(id)
                 .number(number)

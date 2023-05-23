@@ -1,8 +1,11 @@
 package com.example.springjunitpractice.web;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +21,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springjunitpractice.config.dummy.DummyObject;
+import com.example.springjunitpractice.domain.account.AccountRepository;
+import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserRepository;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,9 +41,17 @@ public class AccountControllerTest extends DummyObject {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private EntityManager entityManager;
+
     @BeforeEach
     public void setUp() {
-        userRepository.save(newUser("user1", "User"));
+        User user = userRepository.save(newUser("user1", "User"));
+        accountRepository.save(newAccount(1111L, user));
+        entityManager.clear(); // 영속성 컨텍스트 초기화
     }
 
     // 강제로 시큐리티 세션 생성 (DB에서 username = user 조회 후 세션에 담음)
@@ -49,7 +62,7 @@ public class AccountControllerTest extends DummyObject {
     public void save_account_test() throws Exception {
         // given
         AccountSaveReqDto accountSaveReqDto = new AccountSaveReqDto();
-        accountSaveReqDto.setNumber(1111);
+        accountSaveReqDto.setNumber(1111L);
         accountSaveReqDto.setPassword(1234);
 
         // DTO 객체를 Json 데이터로 변환
@@ -72,6 +85,21 @@ public class AccountControllerTest extends DummyObject {
     
         // when
         ResultActions resultActions = mvc.perform(get("/api/s/account/login-user"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트: " + responseBody);
+    
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void delete_account_test() throws Exception {
+        // given
+        Long number = 1111L;
+    
+        // when
+        ResultActions resultActions = mvc.perform(delete("/api/s/account/" + number));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트: " + responseBody);
     

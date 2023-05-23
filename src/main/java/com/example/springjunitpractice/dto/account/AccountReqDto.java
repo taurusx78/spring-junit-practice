@@ -14,7 +14,7 @@ public class AccountReqDto {
     public static class AccountSaveReqDto {
         @NotNull
         @Digits(integer = 20, fraction = 0)
-        private int number;
+        private Long number;
 
         @NotNull
         @Digits(integer = 4, fraction = 0)

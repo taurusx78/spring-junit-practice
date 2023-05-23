@@ -49,4 +49,18 @@ public class AccountService {
 
         return new AccountListRespDto(user, accountListPS);
     }
+
+    @Transactional
+    public void 계좌삭제(Long number, Long userId) {
+        // 계좌번호 확인
+        Account accountPS = accountRepository.findByNumber(number).orElseThrow(
+            () -> new CustomApiException("계좌가 존재하지 않습니다.")
+        );
+
+        // 계좌 소유자 확인 (소유자 아닐 시 Exception 발생)
+        accountPS.checkOwner(userId);
+
+        // 계좌 삭제
+        accountRepository.deleteById(accountPS.getId());
+    }
 }
