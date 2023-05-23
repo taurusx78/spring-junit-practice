@@ -2,9 +2,6 @@ package com.example.springjunitpractice.config.jwt;
 
 import java.util.Date;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -13,8 +10,6 @@ import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserEnum;
 
 public class JwtProcess {
-
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     // 토큰 생성
     public static String create(PrincipalDetails principal) {

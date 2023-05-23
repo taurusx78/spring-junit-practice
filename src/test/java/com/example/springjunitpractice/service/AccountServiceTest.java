@@ -5,6 +5,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,7 @@ import com.example.springjunitpractice.domain.account.AccountRepository;
 import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserRepository;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -43,7 +46,7 @@ public class AccountServiceTest extends DummyObject {
     private ObjectMapper objectMapper;
     
     @Test
-    public void save_account_test() throws Exception {
+    public void 계좌등록_test() throws Exception {
         // given
         Long userId = 1L;
 
@@ -52,20 +55,38 @@ public class AccountServiceTest extends DummyObject {
         accountSaveReqDto.setPassword(1234);
 
         // stub 1
-        User user = newMockUser(userId, "user", "User");
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-
-        // stub 2
         when(accountRepository.findByNumber(anyInt())).thenReturn(Optional.empty());
     
-        // stub 3
+        // stub 2
+        User user = newMockUser(userId, "user", "User");
         Account account = newMockAccount(1L, 1111, 1000L, user);
         when(accountRepository.save(any())).thenReturn(account);
 
         // when
-        AccountSaveRespDto accountSaveRespDto = accountService.saveAccount(userId, accountSaveReqDto);
+        AccountSaveRespDto accountSaveRespDto = accountService.계좌등록(userId, accountSaveReqDto);
 
         // then
         assertThat(accountSaveRespDto.getNumber()).isEqualTo(account.getNumber());
+    }
+
+    @Test
+    public void 계좌목록보기_유저별_test() throws Exception {
+        // given
+        Long userId = 1L;
+        String fullname = "User";
+
+        // stub 1
+        User user = newMockUser(userId, "user", fullname);
+        Account ssarAccount1 = newMockAccount(1L, 1111, 1000L, user);
+        Account ssarAccount2 = newMockAccount(2L, 2222, 1000L, user);
+        List<Account> accountList = Arrays.asList(ssarAccount1, ssarAccount2);
+        when(accountRepository.findByUser_id(any())).thenReturn(accountList);
+
+        // when
+        AccountListRespDto accountListRespDto = accountService.계좌목록보기_유저별(userId, fullname);
+    
+        // then
+        assertThat(accountListRespDto.getFullname()).isEqualTo(fullname);
+        assertThat(accountListRespDto.getAccounts().size()).isEqualTo(accountList.size());
     }
 }

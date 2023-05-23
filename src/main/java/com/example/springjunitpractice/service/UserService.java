@@ -2,8 +2,6 @@ package com.example.springjunitpractice.service;
 
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +18,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class UserService {
     
-    private final Logger log = LoggerFactory.getLogger(getClass());
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public JoinRespDto join(JoinReqDto joinReqDto) {
+    public JoinRespDto 회원가입(JoinReqDto joinReqDto) {
         // 1. 아이디 중복 검사
         Optional<User> userOP = userRepository.findByUsername(joinReqDto.getUsername());
 

@@ -27,7 +27,7 @@ public class UserController {
     // @RequestBody: Json 데이터 전송 받음
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody @Valid JoinReqDto joinReqDto, BindingResult bindingResult) {
-        JoinRespDto joinRespDto = userService.join(joinReqDto);
+        JoinRespDto joinRespDto = userService.회원가입(joinReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1, "회원가입 완료", joinRespDto), HttpStatus.CREATED);
     }
 }

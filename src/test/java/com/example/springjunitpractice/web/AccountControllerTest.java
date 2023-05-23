@@ -1,5 +1,6 @@
 package com.example.springjunitpractice.web;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,5 +63,19 @@ public class AccountControllerTest extends DummyObject {
 
         // then
         resultActions.andExpect(status().isCreated());
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void find_user_accounts_test() throws Exception {
+        // given
+    
+        // when
+        ResultActions resultActions = mvc.perform(get("/api/s/account/login-user"));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트: " + responseBody);
+    
+        // then
+        resultActions.andExpect(status().isOk());
     }
 }

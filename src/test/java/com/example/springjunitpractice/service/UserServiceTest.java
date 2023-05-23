@@ -38,7 +38,7 @@ public class UserServiceTest extends DummyObject {
     private BCryptPasswordEncoder passwordEncoder;
     
     @Test
-    public void _test() throws Exception {
+    public void 회원가입_test() throws Exception {
         // given
         JoinReqDto joinReqDto = new JoinReqDto();
         joinReqDto.setUsername("user");
@@ -54,7 +54,7 @@ public class UserServiceTest extends DummyObject {
         when(userRepository.save(any())).thenReturn(user);
     
         // when
-        JoinRespDto joinRespDto = userService.join(joinReqDto);
+        JoinRespDto joinRespDto = userService.회원가입(joinReqDto);
     
         // then
         assertThat(joinRespDto.getUsername()).isEqualTo(joinReqDto.getUsername());
