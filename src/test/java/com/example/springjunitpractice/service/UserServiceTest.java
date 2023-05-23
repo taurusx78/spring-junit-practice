@@ -25,15 +25,15 @@ import com.example.springjunitpractice.dto.user.UserRespDto.JoinRespDto;
 @ExtendWith(MockitoExtension.class) // Mockito 환경에서 테스트
 public class UserServiceTest extends DummyObject {
 
-    // Mockito 환경에 UserService 주입
+    // 모든 Mock 객체가 InjectMocks 객체에 주입됨
     @InjectMocks
     private UserService userService;
 
-    // 가짜 UserRepository 생성
+    // 가짜 객체 생성
     @Mock
     private UserRepository userRepository;
 
-    // 진짜 BCryptPasswordEncoder 생성
+    // 진짜 객체를 InjectMocks 객체에 주입
     @Spy
     private BCryptPasswordEncoder passwordEncoder;
     

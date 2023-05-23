@@ -63,7 +63,7 @@ public class SecurityConfig {
 
         http.authorizeRequests()
                 .antMatchers("/api/s/**").authenticated()
-                .antMatchers("/api/admin/**").hasRole(UserEnum.ADMIN.toString())
+                .antMatchers("/api/admin/**").hasRole(UserEnum.ADMIN.name())
                 .anyRequest().permitAll();
 
         // 시큐리티 필터에서 발생한 Exception 처리
