@@ -18,9 +18,11 @@ import com.example.springjunitpractice.config.auth.PrincipalDetails;
 import com.example.springjunitpractice.dto.ResponseDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import com.example.springjunitpractice.service.AccountService;
 
 import lombok.RequiredArgsConstructor;
@@ -47,14 +49,23 @@ public class AccountController {
     }
 
     @DeleteMapping("/s/account/{number}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Long number, @AuthenticationPrincipal PrincipalDetails principal) {
+    public ResponseEntity<?> deleteAccount(@PathVariable Long number,
+            @AuthenticationPrincipal PrincipalDetails principal) {
         accountService.계좌삭제(number, principal.getUser().getId());
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌가 삭제되었습니다.", null), HttpStatus.OK);
     }
 
     @PostMapping("/account/deposit")
-    public ResponseEntity<?> depositAccount(@RequestBody @Valid AccountDepositReqDto accountDepositReqDto, BindingResult bindingResult) {
+    public ResponseEntity<?> depositAccount(@RequestBody @Valid AccountDepositReqDto accountDepositReqDto,
+            BindingResult bindingResult) {
         AccountDepositRespDto dto = accountService.계좌입금(accountDepositReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌에 입금이 완료되었습니다.", dto), HttpStatus.CREATED);
+    }
+
+    @PostMapping("/s/account/withdraw")
+    public ResponseEntity<?> withdrawAccount(@RequestBody @Valid AccountWithdrawReqDto AccountWithdrawReqDto,
+            BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetails principal) {
+        AccountWithdrawRespDto dto = accountService.계좌출금(principal.getUser().getId(), AccountWithdrawReqDto);
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 출금이 완료되었습니다.", dto), HttpStatus.OK);
     }
 }

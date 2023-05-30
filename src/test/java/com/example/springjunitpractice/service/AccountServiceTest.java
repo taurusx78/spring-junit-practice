@@ -122,7 +122,7 @@ public class AccountServiceTest extends DummyObject {
         accountDepositReqDto.setAmount(100L);
         accountDepositReqDto.setGubun("DEPOSIT");
         accountDepositReqDto.setPhone("01011111111");
-    
+
         // stub 1
         User user1 = newMockUser(1L, "user", "User");
         Account account1 = newMockAccount(1L, 1111L, 1000L, user1);
@@ -136,8 +136,30 @@ public class AccountServiceTest extends DummyObject {
 
         // when
         AccountDepositRespDto accountDepositRespDto = accountService.계좌입금(accountDepositReqDto);
-    
+
         // then
         assertThat(account1.getBalance()).isEqualTo(accountDepositRespDto.getTransaction().getDepositAccountBalance());
+    }
+
+    @Test
+    public void 계좌출금_test() throws Exception {
+        // given
+        Long amount = 100L;
+        Long userId = 1L;
+        int password = 1234;
+
+        User user = newMockUser(userId, "user", "User");
+        Account account = newMockAccount(1L, 1111L, 1000L, user);
+
+        // when
+        if (amount <= 0L) {
+            throw new CustomApiException("0원 이상의 금액을 출금해 주세요.");
+        }
+        account.checkOwner(userId);
+        account.checkPassword(password);
+        account.withdraw(amount);
+
+        // then
+        assertThat(account.getBalance()).isEqualTo(900L);
     }
 }

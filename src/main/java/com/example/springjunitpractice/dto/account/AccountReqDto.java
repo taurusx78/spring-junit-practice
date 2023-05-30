@@ -49,4 +49,22 @@ public class AccountReqDto {
         @Pattern(regexp = "^(01)[0-9]{9}$")
         private String phone;
     }
+
+    @Data
+    public static class AccountWithdrawReqDto {
+        @NotNull
+        @Digits(integer = 20, fraction = 0)
+        private Long number;
+
+        @NotNull
+        @Digits(integer = 4, fraction = 0)
+        private int password;
+
+        @NotNull
+        private Long amount; // 입금 금액
+
+        @NotBlank
+        @Pattern(regexp = "^(WITHDRAW)$")
+        private String gubun; // DEPOSIT
+    }
 }

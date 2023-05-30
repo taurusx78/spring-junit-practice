@@ -14,9 +14,11 @@ import com.example.springjunitpractice.domain.transaction.TransactionRepository;
 import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import com.example.springjunitpractice.handler.exception.CustomApiException;
 
 import lombok.RequiredArgsConstructor;
@@ -69,8 +71,9 @@ public class AccountService {
         accountRepository.deleteById(accountPS.getId());
     }
 
+    // ATM -> 계좌 (인증 필요 없음)
     @Transactional
-    public AccountDepositRespDto 계좌입금(AccountDepositReqDto accountDepositReqDto) { // ATM -> 계좌 (인증 필요 없음)
+    public AccountDepositRespDto 계좌입금(AccountDepositReqDto accountDepositReqDto) {
         // 입금 금액 0원 체크
         if (accountDepositReqDto.getAmount() <= 0L) {
             throw new CustomApiException("0원 이상의 금액을 입금해 주세요.");
@@ -85,10 +88,10 @@ public class AccountService {
 
         // 거래 내역 기록
         Transaction transaction = Transaction.builder()
-                .depositAccount(accountPS)
                 .withdrawAccount(null)
-                .depositAccountBalance(accountPS.getBalance())
+                .depositAccount(accountPS)
                 .withdrawAccountBalance(null)
+                .depositAccountBalance(accountPS.getBalance())
                 .amount(accountDepositReqDto.getAmount())
                 .gubun(TransactionEnum.DEPOSIT)
                 .sender("ATM")
@@ -98,5 +101,42 @@ public class AccountService {
         Transaction transactionPS = transactionRepository.save(transaction);
 
         return new AccountDepositRespDto(accountPS, transactionPS);
+    }
+
+    // 나의 계좌 -> ATM
+    @Transactional
+    public AccountWithdrawRespDto 계좌출금(Long userId, AccountWithdrawReqDto accountWithdrawReqDto) {
+        // 출금 금액 0원 체크
+        if (accountWithdrawReqDto.getAmount() <= 0L) {
+            throw new CustomApiException("0원 이상의 금액을 출금해 주세요.");
+        }
+
+        // 계좌 존재 유무 확인
+        Account accountPS = accountRepository.findByNumber(accountWithdrawReqDto.getNumber()).orElseThrow(
+                () -> new CustomApiException("계좌가 존재하지 않습니다."));
+
+        // 출금계좌 소유자 확인 (로그인한 사용자와 동일한지)
+        accountPS.checkOwner(userId);
+
+        // 출금계좌 비밀번호 확인
+        accountPS.checkPassword(accountWithdrawReqDto.getPassword());
+
+        // 출금계좌 잔액 확인 및 출금
+        accountPS.withdraw(accountWithdrawReqDto.getAmount());
+
+        // 거래 내역 기록
+        Transaction transaction = Transaction.builder()
+                .withdrawAccount(accountPS)
+                .depositAccount(null)
+                .withdrawAccountBalance(accountPS.getBalance())
+                .depositAccountBalance(null)
+                .amount(accountWithdrawReqDto.getAmount())
+                .gubun(TransactionEnum.WITHDRAW)
+                .sender(accountWithdrawReqDto.getNumber().toString())
+                .receiver("ATM")
+                .build();
+        Transaction transactionPS = transactionRepository.save(transaction);
+
+        return new AccountWithdrawRespDto(accountPS, transactionPS);
     }
 }
