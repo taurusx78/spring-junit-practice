@@ -8,15 +8,19 @@ import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserEnum;
 
 public class JwtProcessTest {
+
+    private String createToken() {
+        User user = User.builder().id(1L).role(UserEnum.CUSTOMER).build();
+        PrincipalDetails principal = new PrincipalDetails(user);
+        return JwtProcess.create(principal);
+    }
     
     @Test
     public void create_test() throws Exception {
         // given
-        User user = User.builder().id(1L).role(UserEnum.CUSTOMER).build();
-        PrincipalDetails principal = new PrincipalDetails(user);
 
         // when
-        String jwtToken = JwtProcess.create(principal);
+        String jwtToken = createToken();
         System.out.println("테스트: " + jwtToken);
         
         // then
@@ -26,7 +30,8 @@ public class JwtProcessTest {
     @Test
     public void verify_test() throws Exception {
         // given
-        String jwtToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqd3QiLCJyb2xlIjoiQ1VTVE9NRVIiLCJpZCI6MSwiZXhwIjoxNjg1MzI3MjYwfQ.jBDmAiLClLGkaU1C5MKKANTzSaTt8tH8tNHUE6BmxyCfVvdpRnBUmY7ttY1poWjxKqIeE4cXh3j4anBiz-lTrw";
+        String token = createToken();
+        String jwtToken = token.replace(JwtProperties.TOKEN_PREFIX, "");
     
         // when
         PrincipalDetails principal = JwtProcess.verify(jwtToken);

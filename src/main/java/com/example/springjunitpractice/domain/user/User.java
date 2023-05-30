@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor // 스프링이 User 객체를 생성할 때 빈 객체로 생성하기 때문에 필요함!
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "users")
+@Table(name = "user_db")
 @Entity
 public class User {
 

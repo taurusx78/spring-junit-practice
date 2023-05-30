@@ -19,9 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.example.springjunitpractice.config.dummy.DummyObject;
 import com.example.springjunitpractice.domain.account.Account;
 import com.example.springjunitpractice.domain.account.AccountRepository;
+import com.example.springjunitpractice.domain.transaction.Transaction;
+import com.example.springjunitpractice.domain.transaction.TransactionRepository;
 import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserRepository;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.example.springjunitpractice.handler.exception.CustomApiException;
@@ -41,6 +45,10 @@ public class AccountServiceTest extends DummyObject {
     // 가짜 생성
     @Mock
     private AccountRepository accountRepository;
+
+    // 가짜 생성
+    @Mock
+    private TransactionRepository transactionRepository;
 
     // 진짜 객체를 InjectMocks 객체에 주입
     @Spy
@@ -104,5 +112,32 @@ public class AccountServiceTest extends DummyObject {
 
         // when & then
         assertThrows(CustomApiException.class, () -> accountService.계좌삭제(number, userId));
+    }
+
+    @Test
+    public void 계좌입금_test() throws Exception {
+        // given
+        AccountDepositReqDto accountDepositReqDto = new AccountDepositReqDto();
+        accountDepositReqDto.setNumber(1111L);
+        accountDepositReqDto.setAmount(100L);
+        accountDepositReqDto.setGubun("DEPOSIT");
+        accountDepositReqDto.setPhone("01011111111");
+    
+        // stub 1
+        User user1 = newMockUser(1L, "user", "User");
+        Account account1 = newMockAccount(1L, 1111L, 1000L, user1);
+        when(accountRepository.findByNumber(any())).thenReturn(Optional.of(account1));
+
+        // stub 2
+        User user2 = newMockUser(1L, "user", "User");
+        Account account2 = newMockAccount(1L, 1111L, 1000L, user2);
+        Transaction transaction = newMockDepositTransaction(1L, account2);
+        when(transactionRepository.save(any())).thenReturn(transaction);
+
+        // when
+        AccountDepositRespDto accountDepositRespDto = accountService.계좌입금(accountDepositReqDto);
+    
+        // then
+        assertThat(account1.getBalance()).isEqualTo(accountDepositRespDto.getTransaction().getDepositAccountBalance());
     }
 }

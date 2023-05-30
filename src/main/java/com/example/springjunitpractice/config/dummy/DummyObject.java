@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.example.springjunitpractice.domain.account.Account;
+import com.example.springjunitpractice.domain.transaction.Transaction;
+import com.example.springjunitpractice.domain.transaction.TransactionEnum;
 import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserEnum;
 
@@ -58,5 +60,27 @@ public class DummyObject {
                 .created(LocalDateTime.now())
                 .updated(LocalDateTime.now())
                 .build();
+    }
+
+    // 조회용
+    protected Transaction newMockDepositTransaction(Long id, Account account) {
+        // 계좌 잔액 1100L으로 변경
+        account.deposit(100L);
+
+        Transaction transaction = Transaction.builder()
+                .id(id)
+                .depositAccount(account)
+                .withdrawAccount(null)
+                .depositAccountBalance(account.getBalance())
+                .withdrawAccountBalance(null)
+                .amount(100L)
+                .gubun(TransactionEnum.DEPOSIT)
+                .sender("ATM")
+                .receiver(account.getNumber().toString())
+                .phone("01011111111")
+                .created(LocalDateTime.now())
+                .updated(LocalDateTime.now())
+                .build();
+        return transaction;
     }
 }

@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "account_db")
 @Entity
 public class Account {
     
@@ -32,7 +34,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 60)
+    @Column(unique = true, nullable = false, length = 20)
     private Long number; // 계좌번호
 
     @Column(nullable = false, length = 4)
@@ -71,5 +73,9 @@ public class Account {
         if (user.getId() != userId) {
             throw new CustomApiException("계좌의 소유자가 아닙니다.");
         }
+    }
+
+    public void deposit(Long amount) {
+        balance += amount;
     }
 }

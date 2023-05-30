@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "transaction_db")
 @Entity
 public class Transaction {
     
@@ -48,7 +50,7 @@ public class Transaction {
 
     @Enumerated(EnumType.STRING) // 문자열 타입으로 테이블에 저장
     @Column(nullable = false)
-    private TransactionEnum type; // WITHDRAW, DEPOSIT, TRANSFER, ALL
+    private TransactionEnum gubun; // WITHDRAW, DEPOSIT, TRANSFER, ALL
 
     // 계좌는 사라져도 로그는 남아야 함
     private String sender;
@@ -65,7 +67,7 @@ public class Transaction {
 
     @Builder
     public Transaction(Long id, Account withdrawAccount, Account depositAccount, Long amount,
-            Long withdrawAccountBalance, Long depositAccountBalance, TransactionEnum type, String sender,
+            Long withdrawAccountBalance, Long depositAccountBalance, TransactionEnum gubun, String sender,
             String receiver, String phone, LocalDateTime created, LocalDateTime updated) {
         this.id = id;
         this.withdrawAccount = withdrawAccount;
@@ -73,7 +75,7 @@ public class Transaction {
         this.amount = amount;
         this.withdrawAccountBalance = withdrawAccountBalance;
         this.depositAccountBalance = depositAccountBalance;
-        this.type = type;
+        this.gubun = gubun;
         this.sender = sender;
         this.receiver = receiver;
         this.phone = phone;

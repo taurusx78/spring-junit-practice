@@ -1,7 +1,9 @@
 package com.example.springjunitpractice.dto.account;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import com.example.springjunitpractice.domain.account.Account;
 import com.example.springjunitpractice.domain.user.User;
@@ -28,5 +30,23 @@ public class AccountReqDto {
                     .user(user)
                     .build();
         }
+    }
+
+    @Data
+    public static class AccountDepositReqDto {
+        @NotNull
+        @Digits(integer = 20, fraction = 0)
+        private Long number;
+
+        @NotNull
+        private Long amount; // 입금 금액
+
+        @NotBlank
+        @Pattern(regexp = "^(DEPOSIT)$")
+        private String gubun; // DEPOSIT
+
+        @NotBlank
+        @Pattern(regexp = "^(01)[0-9]{9}$")
+        private String phone;
     }
 }
