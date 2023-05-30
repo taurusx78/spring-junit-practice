@@ -17,8 +17,8 @@ public class DummyDevInit extends DummyObject {
     CommandLineRunner init(UserRepository userRepository, AccountRepository accountRepository) { // 자동으로 DI 해줌
         return (args) -> {
             // 서버 실행 시 무조건 실행됨
-            User user = userRepository.save(newUser("user1", "User"));
-            accountRepository.save(newAccount(1111L, user));
+            User user1 = userRepository.save(newUser("user1", "User1"));
+            accountRepository.save(newAccount(1111L, user1));
         };
     }
 }

@@ -18,10 +18,12 @@ import com.example.springjunitpractice.config.auth.PrincipalDetails;
 import com.example.springjunitpractice.dto.ResponseDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountTransferRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountWithdrawRespDto;
 import com.example.springjunitpractice.service.AccountService;
 
@@ -67,5 +69,12 @@ public class AccountController {
             BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetails principal) {
         AccountWithdrawRespDto dto = accountService.계좌출금(principal.getUser().getId(), AccountWithdrawReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌 출금이 완료되었습니다.", dto), HttpStatus.OK);
+    }
+
+    @PostMapping("/s/account/transfer")
+    public ResponseEntity<?> transferAccount(@RequestBody @Valid AccountTransferReqDto accountTransferReqDto,
+            BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetails principal) {
+        AccountTransferRespDto dto = accountService.계좌이체(principal.getUser().getId(), accountTransferReqDto);
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 이체가 완료되었습니다.", dto), HttpStatus.OK);
     }
 }

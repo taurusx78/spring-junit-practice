@@ -25,6 +25,7 @@ import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserRepository;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
@@ -161,5 +162,47 @@ public class AccountServiceTest extends DummyObject {
 
         // then
         assertThat(account.getBalance()).isEqualTo(900L);
+    }
+
+    @Test
+    public void 계좌이체_test() throws Exception {
+        // given
+        AccountTransferReqDto accountTransferReqDto = new AccountTransferReqDto();
+        accountTransferReqDto.setWithdrawNumber(1111L);
+        accountTransferReqDto.setDepositNumber(2222L);
+        accountTransferReqDto.setWithdrawPassword(1234);
+        accountTransferReqDto.setAmount(100L);
+        accountTransferReqDto.setGubun("TRANSFER");
+
+        User user1 = newMockUser(1000L, "user1", "User1");
+        User user2 = newMockUser(2000L, "user2", "User2");
+        Account withdrawAccount = newMockAccount(1L, 1111L, 1000L, user1);
+        Account depositAccount = newMockAccount(2L, 2222L, 1000L, user2);
+
+        // when
+        // 출금계좌와 입금계좌가 동일하면 안됨
+        if (accountTransferReqDto.getWithdrawNumber().longValue() == accountTransferReqDto.getDepositNumber()
+                .longValue()) {
+            throw new CustomApiException("입출금계좌가 동일할 수 없습니다.");
+        }
+
+        // 0원 체크
+        if (accountTransferReqDto.getAmount() <= 0L) {
+            throw new CustomApiException("0원 이상의 금액을 출금해 주세요.");
+        }
+
+        // 출금계좌 소유자 확인 (로그인한 사용자와 동일한지)
+        withdrawAccount.checkOwner(user1.getId());
+
+        // 출금계좌 비밀번호 확인
+        withdrawAccount.checkPassword(accountTransferReqDto.getWithdrawPassword());
+
+        // 출금계좌 잔액 확인 및 이체
+        withdrawAccount.withdraw(accountTransferReqDto.getAmount());
+        depositAccount.deposit(accountTransferReqDto.getAmount());
+
+        // then
+        assertThat(withdrawAccount.getBalance()).isEqualTo(900L);
+        assertThat(depositAccount.getBalance()).isEqualTo(1100L);
     }
 }

@@ -27,6 +27,7 @@ import com.example.springjunitpractice.domain.user.User;
 import com.example.springjunitpractice.domain.user.UserRepository;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountDepositReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqDto;
+import com.example.springjunitpractice.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.handler.exception.CustomApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -54,8 +55,10 @@ public class AccountControllerTest extends DummyObject {
 
     @BeforeEach
     public void setUp() {
-        User user = userRepository.save(newUser("user1", "User"));
-        accountRepository.save(newAccount(1111L, user));
+        User user1 = userRepository.save(newUser("user1", "User1"));
+        User user2 = userRepository.save(newUser("user2", "User2"));
+        accountRepository.save(newAccount(1111L, user1));
+        accountRepository.save(newAccount(2222L, user2));
         entityManager.clear(); // 정확한 테스트를 위해 영속성 컨텍스트 초기화
     }
 
@@ -152,6 +155,30 @@ public class AccountControllerTest extends DummyObject {
         // when
         ResultActions resultActions = mvc
                 .perform(post("/api/s/account/withdraw").content(requestBody).contentType(MediaType.APPLICATION_JSON));
+        String responseBody = resultActions.andReturn().getResponse().getContentAsString();
+        System.out.println("테스트: " + responseBody);
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
+    @WithUserDetails(value = "user1", setupBefore = TestExecutionEvent.TEST_EXECUTION)
+    @Test
+    public void transferAccount_test() throws Exception {
+        // given
+        AccountTransferReqDto accountTransferReqDto = new AccountTransferReqDto();
+        accountTransferReqDto.setWithdrawNumber(1111L);
+        accountTransferReqDto.setDepositNumber(2222L);
+        accountTransferReqDto.setWithdrawPassword(1234);
+        accountTransferReqDto.setAmount(100L);
+        accountTransferReqDto.setGubun("TRANSFER");
+
+        // DTO 객체를 Json 데이터로 변환
+        String requestBody = objectMapper.writeValueAsString(accountTransferReqDto);
+
+        // when
+        ResultActions resultActions = mvc
+                .perform(post("/api/s/account/transfer").content(requestBody).contentType(MediaType.APPLICATION_JSON));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
         System.out.println("테스트: " + responseBody);
 
