@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "account_db")
+@Table(name = "account_tb")
 @Entity
 public class Account {
     
@@ -70,7 +70,7 @@ public class Account {
     public void checkOwner(Long userId) {
         // User 엔티티가 LAZY 로딩이어도 Account 테이블에서 user_id는 조회할 수 있기 때문에,
         // user.getId()를 호출해도 User 엔티티의 로딩이 일어나진 않음
-        if (user.getId() != userId) {
+        if (user.getId().longValue() != userId.longValue()) {
             throw new CustomApiException("계좌의 소유자가 아닙니다.");
         }
     }
