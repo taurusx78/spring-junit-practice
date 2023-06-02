@@ -3,14 +3,17 @@ package com.example.springjunitpractice.domain.transaction;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -35,9 +38,12 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Transaction 엔티티와 연관된 Account 엔티티 삭제 가능하도록 외래키 제약조건 해제
+    @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @ManyToOne(fetch = FetchType.LAZY)
     private Account withdrawAccount; // 출금 계좌
 
+    @JoinColumn(foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @ManyToOne(fetch = FetchType.LAZY)
     private Account depositAccount; // 입금 계좌
 

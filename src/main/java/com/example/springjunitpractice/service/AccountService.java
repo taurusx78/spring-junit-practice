@@ -17,6 +17,7 @@ import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqD
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDetailsRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountTransferRespDto;
@@ -185,5 +186,22 @@ public class AccountService {
         Transaction transactionPS = transactionRepository.save(transaction);
 
         return new AccountTransferRespDto(withdrawAccountPS, transactionPS);
+    }
+
+    public AccountDetailsRespDto 계좌상세보기(Long number, Long userId, int page) {
+        // 구분값 고정
+        String gubun = "ALL";
+
+        // 계좌 존재 유무 확인
+        Account accountPS = accountRepository.findByNumber(number).orElseThrow(
+                () -> new CustomApiException("계좌가 존재하지 않습니다."));
+
+        // 계좌 소유자 확인 (로그인한 사용자와 동일한지)
+        accountPS.checkOwner(userId);
+
+        // 입출금내역 조회
+        List<Transaction> transactionListPS = transactionRepository.findTransactionList(accountPS.getId(), gubun, page);
+
+        return new AccountDetailsRespDto(accountPS, transactionListPS);
     }
 }

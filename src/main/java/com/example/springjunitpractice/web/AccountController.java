@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.springjunitpractice.config.auth.PrincipalDetails;
@@ -21,6 +22,7 @@ import com.example.springjunitpractice.dto.account.AccountReqDto.AccountSaveReqD
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountTransferReqDto;
 import com.example.springjunitpractice.dto.account.AccountReqDto.AccountWithdrawReqDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDepositRespDto;
+import com.example.springjunitpractice.dto.account.AccountRespDto.AccountDetailsRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountListRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountSaveRespDto;
 import com.example.springjunitpractice.dto.account.AccountRespDto.AccountTransferRespDto;
@@ -76,5 +78,13 @@ public class AccountController {
             BindingResult bindingResult, @AuthenticationPrincipal PrincipalDetails principal) {
         AccountTransferRespDto dto = accountService.계좌이체(principal.getUser().getId(), accountTransferReqDto);
         return new ResponseEntity<>(new ResponseDto<>(1, "계좌 이체가 완료되었습니다.", dto), HttpStatus.OK);
+    }
+
+    @GetMapping("/s/account/{number}")
+    public ResponseEntity<?> findAccountDetails(@PathVariable Long number,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @AuthenticationPrincipal PrincipalDetails principal) {
+        AccountDetailsRespDto dto = accountService.계좌상세보기(number, principal.getUser().getId(), page);
+        return new ResponseEntity<>(new ResponseDto<>(1, "계좌 상세보기가 조회되었습니다.", dto), HttpStatus.OK);
     }
 }
